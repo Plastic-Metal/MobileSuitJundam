@@ -7,17 +7,37 @@ import ReFreSH.JMobileSuit.ObjectModel.DynamicParameter;
 import ReFreSH.JMobileSuit.ObjectModel.Parsing.*;
 import ReFreSH.JMobileSuit.ObjectModel.SuitClient;
 import ReFreSH.JMobileSuit.SuitHost;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 
 import java.util.ArrayList;
 import java.util.List;
 
+@Configuration
+@ComponentScan(basePackages = "ReFreSH.JMobileSuit")  // Spring 扫描该包，自动发现需要管理的 Bean
 @SuitInfo("Demo")
-public class Client extends SuitClient {
+public class Client {
+
+    @Autowired
+    private SuitClient suitClient;  // 注入 SuitClient 实例，每个请求都有自己的实例
+
     static void exp() throws Exception {
         throw new Exception();
     }
 
     public static void main(String[] args) throws Exception {
+        // 创建 Spring 容器并运行应用
+        AnnotationConfigApplicationContext context = 
+            new AnnotationConfigApplicationContext(Client.class);
+        
+        // 获取 Client 实例并调用 run 方法启动应用
+        context.getBean(Client.class).run();  
+    }
+
+    public void run() {
+        // 通过 SuitHost 运行应用
         new SuitHost(Client.class,
                 PowerLineThemedPromptServer.getPowerLineThemeConfiguration()).Run();
     }
@@ -45,7 +65,6 @@ public class Client extends SuitClient {
 
     @SuitAlias("GE")
     public void GoodEvening(String[] arg) {
-
         IO().WriteLine("Good Evening, " + (arg.length >= 1 ? arg[0] : ""));
     }
 
@@ -62,7 +81,6 @@ public class Client extends SuitClient {
 
     @SuitAlias("GE2")
     public void GoodEvening2(String arg0, String[] arg) {
-
         IO().WriteLine("Good Evening, " + arg0 + (arg.length >= 1 ? " and " + arg[0] : ""));
     }
 
@@ -86,6 +104,7 @@ public class Client extends SuitClient {
         @SuitParser(ParserClass = Integer.class, MethodName = "parseInt")
         @WithDefault
         public int SleepTime = 0;
+
         @Switch("s")
         public boolean isSleeping;
     }
@@ -93,19 +112,13 @@ public class Client extends SuitClient {
     public static class GoodMorningParameter implements DynamicParameter {
         public String name = "foo";
 
-        /**
-         * parse this Parameter from String[].
-         *
-         * @param options String[] to parse from.
-         * @return Whether the parsing is successful
-         */
         @Override
         public boolean parse(String[] options) {
             if (options.length == 1) {
                 name = options[0];
                 return true;
             } else return options.length == 0;
-
         }
     }
 }
+
