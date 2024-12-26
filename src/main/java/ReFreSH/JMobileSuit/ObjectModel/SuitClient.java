@@ -2,37 +2,34 @@ package ReFreSH.JMobileSuit.ObjectModel;
 
 import ReFreSH.JMobileSuit.IO.IOServer;
 import ReFreSH.JMobileSuit.ObjectModel.Annotions.SuitIgnore;
+import org.springframework.stereotype.Component;
 
-/// <summary>
-/// An Standard mobile suit client driver-class.
-/// </summary>
-@SuppressWarnings("unused")
+@Component  // 使用 Spring 管理该类，支持依赖注入
 public abstract class SuitClient implements InfoProvider, IOInteractive {
 
     protected String _text = "";
     private IOServer _io;
 
     /**
-     * The IOServer for current SuitHost.
+     * 获取当前实例的IOServer
      */
     protected IOServer IO() {
         return _io;
     }
 
     /**
-     * set The information provided.
+     * 设置信息
      *
-     * @param value The information provided.
+     * @param value 要提供的信息
      */
     protected void setText(String value) {
         _text = value;
     }
 
-
     /**
-     * The information provided.
+     * 获取信息
      *
-     * @return The information provided.
+     * @return 当前提供的信息
      */
     @SuitIgnore
     public String text() {
@@ -40,12 +37,13 @@ public abstract class SuitClient implements InfoProvider, IOInteractive {
     }
 
     /**
-     * Provides Interface for SuitHost to set ioServer
+     * 设置当前的 IOServer
      *
-     * @param io SuitHost's IOServer.
+     * @param io 当前 SuitHost 的 IOServer
      */
     @SuitIgnore
     public void setIO(IOServer io) {
         _io = io;
     }
 }
+
